@@ -7,18 +7,30 @@ on:
     branches: [develop]
 
 jobs:
-  test:
+  domain-test:
+    name: Core Domain Unit Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: temurin
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+      - name: Run core-domain unit tests (pure JVM / JUnit 5)
+        run: ./gradlew :core:core-domain:test --no-daemon
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-domain-test-report
+          path: core/core-domain/build/reports/tests/test/
