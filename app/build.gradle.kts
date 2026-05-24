@@ -1,9 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+}
+
+val localProperties = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -20,7 +27,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "FEED_URL", "\"http://10.0.2.2:5173\"")
+            val debugUrl = localProperties.getProperty("feed.url.debug", "http://10.0.2.2:5173")
+            buildConfigField("String", "FEED_URL", "\"$debugUrl\"")
         }
         release {
             isMinifyEnabled = false
