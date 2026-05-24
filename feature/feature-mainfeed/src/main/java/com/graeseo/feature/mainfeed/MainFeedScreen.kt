@@ -16,27 +16,22 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-/**
- * 메인피드 화면.
- *
- * 구조: WebView(메인피드 콘텐츠) + 네이티브 Compose BottomNavigationBar
- * TODO: WebView URL을 환경별 설정에서 주입받도록 리팩터링
- */
 @Composable
-fun MainFeedScreen() {
-    var selectedTab by remember { mutableIntStateOf(0) }
+fun MainFeedScreen(
+    viewModel: MainFeedViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
             GraeseoBottomNavigationBar(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it },
+                selectedTab = uiState.selectedTab,
+                onTabSelected = viewModel::onTabSelected,
             )
         },
     ) { innerPadding ->
@@ -45,22 +40,19 @@ fun MainFeedScreen() {
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            MainFeedWebView()
+            MainFeedWebView(url = uiState.feedUrl)
         }
     }
 }
 
 @Composable
-private fun MainFeedWebView() {
-    // TODO: URL을 BuildConfig 또는 RemoteConfig에서 주입
-    val feedUrl = "about:blank"
-
+private fun MainFeedWebView(url: String) {
     AndroidView(
         factory = { context ->
             WebView(context).apply {
                 webViewClient = WebViewClient()
                 settings.javaScriptEnabled = true
-                loadUrl(feedUrl)
+                loadUrl(url)
             }
         },
         modifier = Modifier.fillMaxSize(),

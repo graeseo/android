@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.junit5.android)
 }
 
 android {
@@ -26,6 +27,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -43,6 +50,11 @@ dependencies {
     implementation(libs.compose.material3)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.lifecycle.runtime.compose)
 
     debugImplementation(libs.compose.ui.tooling)
+
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.junit5.params)
 }
