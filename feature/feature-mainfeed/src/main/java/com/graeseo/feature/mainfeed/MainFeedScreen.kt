@@ -52,7 +52,11 @@ private fun MainFeedWebView(url: String) {
             WebView(context).apply {
                 webViewClient = WebViewClient()
                 settings.javaScriptEnabled = true
-                loadUrl(url)
+            }
+        },
+        update = { webView ->
+            if (webView.url != url) {
+                webView.loadUrl(url)
             }
         },
         modifier = Modifier.fillMaxSize(),
