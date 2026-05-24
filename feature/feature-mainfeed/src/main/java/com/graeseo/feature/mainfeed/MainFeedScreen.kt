@@ -64,6 +64,10 @@ private fun MainFeedWebView() {
             }
         },
         modifier = Modifier.fillMaxSize(),
+        onRelease = { webView ->
+            webView.stopLoading()
+            webView.destroy()
+        },
     )
 }
 
